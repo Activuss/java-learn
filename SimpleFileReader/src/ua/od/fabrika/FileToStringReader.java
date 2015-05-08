@@ -6,18 +6,18 @@ import java.util.Scanner;
 public class FileToStringReader {
 
     private static File getFileFromUser() {
-        boolean fileExists = false;
+        boolean isFileExists = false;
         File textFile = null;
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Input correct path to file");
 
-        while (!fileExists && scanner.hasNext()) {
+        while (!isFileExists && scanner.hasNext()) {
             String path = scanner.nextLine();
             textFile = new File(path);
             if (textFile.exists() && !textFile.isDirectory()) {
                 System.out.println("File was founded");
-                fileExists = true;
+                isFileExists = true;
             } else {
                 System.out.println("Unfortunately there is no such a file. Try again.");
             }
