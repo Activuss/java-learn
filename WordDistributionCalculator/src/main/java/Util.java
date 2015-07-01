@@ -28,9 +28,7 @@ public class Util {
     public static List<Map.Entry<String, Integer>> sortMapByValue(Map<String, Integer> map,
                                                 Comparator<Map.Entry<String, Integer>> comparator) {
         List<Map.Entry<String, Integer>> valuesList = new LinkedList<>(map.entrySet());
-
         Collections.sort(valuesList, comparator);
-
         return Collections.unmodifiableList(valuesList);
     }
 }
