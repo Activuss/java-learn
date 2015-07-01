@@ -22,7 +22,6 @@ public class WordDistributionCalculator {
         } else {
             occurrencesNumber = wordDistributionStorage.getOccurrencesNumber(word) + 1;
         }
-
         wordDistributionStorage.putOrReplace(word, occurrencesNumber);
     }
 
@@ -43,7 +42,6 @@ public class WordDistributionCalculator {
                         return (o1.getValue()).compareTo(o2.getValue());
                     }
                 });
-
             default: return Collections.emptyList();
         }
     }
@@ -68,8 +66,7 @@ public class WordDistributionCalculator {
     public static void main(String[] args) {
         Cli cli = new Cli(args);
         Config config = cli.parseConfig();
-        WordDistributionStorage storage = new WordDistributionStorage();
-
+        Storage storage = new WordDistributionStorage();
         new WordDistributionCalculator(config, storage).calculateStats();
     }
 }
