@@ -33,8 +33,8 @@ public class WordDistributionCalculator {
                 return Collections.unmodifiableList(new LinkedList<>(wordDistributionStorage.getData().entrySet()));
 
             case ALPHABET:
-                Map<String, Integer> naturalOrderedMap = new TreeMap<>(wordDistributionStorage.getData());
-                return Collections.unmodifiableList(new LinkedList<>(naturalOrderedMap.entrySet()));
+                Map<String, Integer> sortedMapyKeys = new TreeMap<>(wordDistributionStorage.getData());
+                return Collections.unmodifiableList(new LinkedList<>(sortedMapyKeys.entrySet()));
 
             case FREQUENCY:
                 return Util.sortMapByValue(wordDistributionStorage.getData(), new Comparator<Map.Entry<String, Integer>>() {
@@ -51,6 +51,7 @@ public class WordDistributionCalculator {
     public void calculateStats() {
         try {
             List<String> fileLines = Util.readFile(config.getInputFile());
+
             for (String line : fileLines) {
                 String [] words = Util.parseWords(line);
                 for (String word : words) {
@@ -59,6 +60,7 @@ public class WordDistributionCalculator {
                     }
                 }
             }
+
             Util.writeFile(config.getOutputFile(), sort(config.getSortType()));
         } catch (IOException e) {
             log.log(Level.SEVERE, "Some IO error during execution of program.", e);
@@ -68,8 +70,9 @@ public class WordDistributionCalculator {
     public static void main(String[] args) {
         Cli cli = new Cli(args);
         Config config = cli.parseConfig();
-        WordDistributionStorage storage = new WordDistributionStorage();
+        Storage storage = new WordDistributionStorage();
 
         new WordDistributionCalculator(config, storage).calculateStats();
     }
 }
+

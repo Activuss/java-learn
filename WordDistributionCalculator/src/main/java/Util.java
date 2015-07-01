@@ -16,7 +16,8 @@ public class Util {
         return FileUtils.readLines(new File(filename), ENCODING_UTF_8);
     }
 
-    public static void writeFile (String filename, List<Map.Entry<String, Integer>> calculatedData) throws IOException {
+    public static void writeFile (String filename, List<Map.Entry<String, Integer>> calculatedData)
+            throws IOException {
         log.log(Level.INFO, "Writing file");
         FileUtils.writeLines(new File(filename), ENCODING_UTF_8, calculatedData);
     }
@@ -28,7 +29,6 @@ public class Util {
     public static List<Map.Entry<String, Integer>> sortMapByValue(Map<String, Integer> map,
                                                 Comparator<Map.Entry<String, Integer>> comparator) {
         List<Map.Entry<String, Integer>> valuesList = new LinkedList<>(map.entrySet());
-
         Collections.sort(valuesList, comparator);
 
         return Collections.unmodifiableList(valuesList);
