@@ -1,4 +1,3 @@
-import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,14 +15,11 @@ public class WordDistributionCalculator {
     }
 
     private void computeWordStat(String word) {
-        int occurrencesNumber;
         if (!wordDistributionStorage.contains(word)) {
-            occurrencesNumber = 1;
-        } else {
-            occurrencesNumber = wordDistributionStorage.getOccurrencesNumber(word) + 1;
+            wordDistributionStorage.putOrReplace(word, 1);
+            return;
         }
-
-        wordDistributionStorage.putOrReplace(word, occurrencesNumber);
+        wordDistributionStorage.putOrReplace(word, wordDistributionStorage.getOccurrencesNumber(word) + 1);
     }
 
     private List<Map.Entry<String, Integer>> sort(SortType sortType) {
@@ -31,11 +27,9 @@ public class WordDistributionCalculator {
         switch (sortType) {
             case NATURAL:
                 return Collections.unmodifiableList(new LinkedList<>(wordDistributionStorage.getData().entrySet()));
-
             case ALPHABET:
-                Map<String, Integer> sortedMapyKeys = new TreeMap<>(wordDistributionStorage.getData());
-                return Collections.unmodifiableList(new LinkedList<>(sortedMapyKeys.entrySet()));
-
+                Map<String, Integer> alphabeticSortedDictionary = new TreeMap<>(wordDistributionStorage.getData());
+                return Collections.unmodifiableList(new LinkedList<>(alphabeticSortedDictionary.entrySet()));
             case FREQUENCY:
                 return Util.sortMapByValue(wordDistributionStorage.getData(), new Comparator<Map.Entry<String, Integer>>() {
                     public int compare(Map.Entry<String, Integer> o1,
@@ -43,7 +37,6 @@ public class WordDistributionCalculator {
                         return (o1.getValue()).compareTo(o2.getValue());
                     }
                 });
-
             default: return Collections.emptyList();
         }
     }
@@ -56,13 +49,12 @@ public class WordDistributionCalculator {
                 String [] words = Util.parseWords(line);
                 for (String word : words) {
                     if (word.length() > 0) {
-                        computeWordStat(word);
+                        computeWordStat(word.toLowerCase());
                     }
                 }
             }
-
             Util.writeFile(config.getOutputFile(), sort(config.getSortType()));
-        } catch (IOException e) {
+        } catch (ApplicaionException e) {
             log.log(Level.SEVERE, "Some IO error during execution of program.", e);
         }
     }
@@ -71,7 +63,6 @@ public class WordDistributionCalculator {
         Cli cli = new Cli(args);
         Config config = cli.parseConfig();
         Storage storage = new WordDistributionStorage();
-
         new WordDistributionCalculator(config, storage).calculateStats();
     }
 }

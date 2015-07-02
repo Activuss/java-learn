@@ -11,15 +11,22 @@ public class Util {
     public static final String ENCODING_UTF_8 = "UTF-8";
     private static final Logger log = Logger.getLogger(Util.class.getName());
 
-    public static List<String> readFile (String filename) throws IOException {
+    public static List<String> readFile (String filename) {
         log.log(Level.INFO, "Reading file");
-        return FileUtils.readLines(new File(filename), ENCODING_UTF_8);
+        try {
+            return FileUtils.readLines(new File(filename), ENCODING_UTF_8);
+        } catch (IOException e) {
+            throw new ApplicaionException("Error during reading input file. Check correctness of name and permissions.", e);
+        }
     }
 
-    public static void writeFile (String filename, List<Map.Entry<String, Integer>> calculatedData)
-            throws IOException {
+    public static void writeFile (String filename, List<Map.Entry<String, Integer>> calculatedData) {
         log.log(Level.INFO, "Writing file");
-        FileUtils.writeLines(new File(filename), ENCODING_UTF_8, calculatedData);
+        try {
+            FileUtils.writeLines(new File(filename), ENCODING_UTF_8, calculatedData);
+        } catch (IOException e) {
+            throw new ApplicaionException("Error during writing result file. Check correctness of name and permissions.", e);
+        }
     }
 
     public static String[] parseWords (String fileLine) {
