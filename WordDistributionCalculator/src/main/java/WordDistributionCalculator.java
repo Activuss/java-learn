@@ -19,6 +19,7 @@ public class WordDistributionCalculator {
             wordDistributionStorage.putOrReplace(word, 1);
             return;
         }
+
         wordDistributionStorage.putOrReplace(word, wordDistributionStorage.getOccurrencesNumber(word) + 1);
     }
 

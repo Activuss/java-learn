@@ -37,7 +37,6 @@ public class Util {
                                                 Comparator<Map.Entry<String, Integer>> comparator) {
         List<Map.Entry<String, Integer>> valuesList = new LinkedList<>(map.entrySet());
         Collections.sort(valuesList, comparator);
-
         return Collections.unmodifiableList(valuesList);
     }
 }
