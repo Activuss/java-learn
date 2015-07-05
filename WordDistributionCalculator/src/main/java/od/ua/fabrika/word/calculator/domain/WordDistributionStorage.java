@@ -1,9 +1,12 @@
-import java.util.*;
+package od.ua.fabrika.word.calculator.domain;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class WordDistributionStorage implements Storage {
     Map<String, Integer> storage = new HashMap<>();
 
-    public boolean contains (String word) {
+    public boolean contains(String word) {
         return storage.containsKey(word);
     }
 

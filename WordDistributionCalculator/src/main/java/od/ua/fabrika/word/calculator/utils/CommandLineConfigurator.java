@@ -1,20 +1,24 @@
+package od.ua.fabrika.word.calculator.utils;
+
+import od.ua.fabrika.word.calculator.domain.Config;
+import od.ua.fabrika.word.calculator.domain.SortType;
 import org.apache.commons.cli.*;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Cli {
-    private static final Logger log = Logger.getLogger(Cli.class.getName());
+public class CommandLineConfigurator {
+    private static final Logger log = Logger.getLogger(CommandLineConfigurator.class.getName());
     private String[] args = null;
     private Options options = new Options();
 
-    public Cli(String[] args) {
+    public CommandLineConfigurator(String[] args) {
         this.args = args;
-
         options.addOption("i", "input", true, "Input file");
         options.addOption("o", "output", true, "Output file");
         options.addOption("a", "alphabet", false, "Sort by alphabet");
         options.addOption("f", "frequency", false, "Sort by frequency");
+        options.addOption("d", "dictionary", false, "Dictionary");
     }
 
     public Config parseConfig() {
@@ -46,6 +50,11 @@ public class Cli {
             } else {
                 config.addSortType(SortType.NATURAL);
             }
+
+            if (cmd.hasOption("d")) {
+                config.useRealDictionary(true);
+            }
+
             log.log(Level.INFO, "Configuration read.");
 
         } catch (ParseException e) {
