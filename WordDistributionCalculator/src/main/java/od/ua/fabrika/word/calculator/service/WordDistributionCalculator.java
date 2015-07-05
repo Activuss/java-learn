@@ -26,7 +26,7 @@ public class WordDistributionCalculator {
         }
     }
 
-    private void computeWordStat(String word) {
+    protected void computeWordStat(String word) {
         if (!wordDistributionStorage.contains(word)) {
             wordDistributionStorage.putOrReplace(word, 1);
             return;
@@ -34,55 +34,51 @@ public class WordDistributionCalculator {
         wordDistributionStorage.putOrReplace(word, wordDistributionStorage.getOccurrencesNumber(word) + 1);
     }
 
-    private List<Map.Entry<String, Integer>> sort(SortType sortType) {
+    protected List<Map.Entry<String, Integer>> sort(SortType sortType) {
         log.log(Level.INFO, "Sorting by " + sortType.toString().toLowerCase() + " order.");
         switch (sortType) {
-            case NATURAL:
-                return Collections.unmodifiableList(new LinkedList<>(wordDistributionStorage.getData().entrySet()));
             case ALPHABET:
                 Map<String, Integer> alphabeticSortedDictionary = new TreeMap<>(wordDistributionStorage.getData());
                 return Collections.unmodifiableList(new LinkedList<>(alphabeticSortedDictionary.entrySet()));
             case FREQUENCY:
-                return sortMapByValue(wordDistributionStorage.getData(), new Comparator<Map.Entry<String, Integer>>() {
-                    public int compare(Map.Entry<String, Integer> o1,
-                                       Map.Entry<String, Integer> o2) {
-                        return (o1.getValue()).compareTo(o2.getValue());
-                    }
-                });
+                return sortMapByValue(wordDistributionStorage.getData(), new IntegerValueComparator());
+            case NATURAL:
             default:
-                return Collections.emptyList();
+                return Collections.unmodifiableList(new LinkedList<>(wordDistributionStorage.getData().entrySet()));
         }
     }
 
     public void calculateStats() {
         log.log(Level.INFO, "Calculating stats.");
-        try {
-            List<String> fileLines = readFile(config.getInputFile());
-            boolean useRealDictionary = config.isRealDictionary();
 
-            for (String line : fileLines) {
-                String[] words = parseWords(line);
-                for (String word : words) {
-                    String wordInLowerCase = word.toLowerCase();
-                    if ((word.length() > 0)) {
-                        if (!useRealDictionary || wordDistributionStorage.contains(wordInLowerCase)
-                                || dictionary.contains(wordInLowerCase)) {
-                            computeWordStat(wordInLowerCase);
-                        }
+        List<String> fileLines = readFile(config.getInputFile());
+        boolean useRealDictionary = config.isRealDictionary();
+
+        for (String line : fileLines) {
+            String[] words = parseWords(line);
+            for (String word : words) {
+                String wordInLowerCase = word.toLowerCase();
+                if ((word.length() > 0)) {
+                    if (!useRealDictionary || wordDistributionStorage.contains(wordInLowerCase)
+                            || dictionary.contains(wordInLowerCase)) {
+                        computeWordStat(wordInLowerCase);
                     }
                 }
             }
-            writeFile(config.getOutputFile(), sort(config.getSortType()));
-        } catch (ApplicationException e) {
-            log.log(Level.SEVERE, "Some IO error during execution of program.", e);
         }
+        writeFile(config.getOutputFile(), sort(config.getSortType()));
+
     }
 
     public static void main(String[] args) {
-        CommandLineConfigurator cli = new CommandLineConfigurator(args);
-        Config config = cli.parseConfig();
-        Storage storage = new WordDistributionStorage();
-        new WordDistributionCalculator(config, storage).calculateStats();
+        try {
+            CommandLineConfigurator cli = new CommandLineConfigurator(args);
+            Config config = cli.parseConfig();
+            Storage storage = new WordDistributionStorage();
+            new WordDistributionCalculator(config, storage).calculateStats();
+        } catch (ApplicationException e) {
+            log.log(Level.SEVERE, "Some IO error during execution of program.", e);
+        }
     }
 }
 

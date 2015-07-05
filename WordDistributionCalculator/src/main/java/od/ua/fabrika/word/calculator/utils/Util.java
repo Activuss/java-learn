@@ -1,5 +1,6 @@
 package od.ua.fabrika.word.calculator.utils;
 
+import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
 import od.ua.fabrika.word.calculator.domain.ApplicationException;
 import org.apache.commons.io.Charsets;
@@ -51,7 +52,9 @@ public class Util {
     }
 
     public static List<Map.Entry<String, Integer>> sortMapByValue(Map<String, Integer> map,
-                                                                        Comparator<Map.Entry<String, Integer>> comparator) {
+                                                                  Comparator<Map.Entry<String, Integer>> comparator) {
+        Preconditions.checkNotNull(map);
+        Preconditions.checkNotNull(comparator);
         List<Map.Entry<String, Integer>> valuesList = new LinkedList<>(map.entrySet());
         Collections.sort(valuesList, comparator);
         return Collections.unmodifiableList(valuesList);

@@ -1,5 +1,6 @@
 package od.ua.fabrika.word.calculator.utils;
 
+import od.ua.fabrika.word.calculator.domain.ApplicationException;
 import od.ua.fabrika.word.calculator.domain.Config;
 import od.ua.fabrika.word.calculator.domain.SortType;
 import org.apache.commons.cli.*;
@@ -34,6 +35,7 @@ public class CommandLineConfigurator {
             } else {
                 log.log(Level.SEVERE, "Missing input option.");
                 help();
+                throw new ApplicationException("Illegal command line properties. Missing input option.");
             }
 
             if (cmd.hasOption("o")) {
@@ -41,6 +43,7 @@ public class CommandLineConfigurator {
             } else {
                 log.log(Level.SEVERE, "Missing output option.");
                 help();
+                throw new ApplicationException("Illegal command line properties. Missing output option.");
             }
 
             if (cmd.hasOption("a")) {
@@ -60,6 +63,7 @@ public class CommandLineConfigurator {
         } catch (ParseException e) {
             log.log(Level.SEVERE, "Failed to parse command line properties.", e);
             help();
+            throw new ApplicationException("Illegal command line properties", e);
         }
         return config;
     }
@@ -67,6 +71,5 @@ public class CommandLineConfigurator {
     private void help() {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("Main", options);
-        System.exit(0);
     }
 }
