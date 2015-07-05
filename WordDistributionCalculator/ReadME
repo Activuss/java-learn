@@ -1,15 +1,9 @@
-lib.ru - скачать книгу на англ. Подсчитать распределение слов. На выходе - файл с частотой каждого слова:
-Переносы, пункутации
+Develop application which able to calculate word distribution stats.
 
-Уровни:
-1)Подсчитать
-2) Режим упорядочивания (по частоте, или по алфовиту) - до среды
-3) Подключить внешний англ словарь (англ)
+Input - some text file, output - text file with calculated stats (word - number of occurencies in text).
 
-На вход параметры командной строки - исп Apache CLI
+Provide possibility of sorting by alphabetic or frequency order.
 
-counter -i book.txt -o freq.txt - a -f -d dictionary
+example of usage:
 
-jar, maven, test, logs, case nonsensitive
-
-guava resources для чтения ресурсов
+counter -i book.txt -o freq.txt -f -d dictionary
