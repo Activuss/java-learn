@@ -1,16 +1,20 @@
 import yotube.ranker.service.RankerService;
 import yotube.ranker.service.YoutubeRankerService;
-import youtube.ranker.domain.Video;
+import youtube.ranker.domain.Config;
+import youtube.tanker.ui.CliUserInterface;
+import youtube.tanker.ui.UserInterface;
 
 public class Main {
 
     public static void main(String[] args) {
-        RankerService rankerService = new YoutubeRankerService(5, 3);
-        Video video = rankerService.extractFullVideoInfo("http://www.youtube.com/watch?v=E1tjmHYUHb4");
-        System.out.println(video);
-        System.out.println("=====");
-        rankerService.analyzeRelatedVideos(video);
-        System.out.println(video);
+        UserInterface userInterface = new CliUserInterface(args);
 
+        Config config = userInterface.getConfig();
+
+        RankerService rankerService = new YoutubeRankerService(config);
+
+        rankerService.rankVideos();
+
+        userInterface.printResult(rankerService.getTop());
     }
 }

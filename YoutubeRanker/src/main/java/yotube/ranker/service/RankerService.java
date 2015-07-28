@@ -2,9 +2,10 @@ package yotube.ranker.service;
 
 import youtube.ranker.domain.Video;
 
-public interface RankerService {
-    Video extractFullVideoInfo(String videoUrl);
-    String cacheHtmlDocument(String videoUrl);
+import java.util.List;
 
-    void analyzeRelatedVideos(Video rootVideo);
+public interface RankerService {
+    void rankVideos();
+
+    List<Video> getTop();
 }

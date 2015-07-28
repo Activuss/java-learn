@@ -4,42 +4,55 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import youtube.ranker.domain.Config;
 import youtube.ranker.domain.Video;
 import youtube.ranker.domain.YoutubeRankerException;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class YoutubeRankerService implements RankerService {
-    public static final String BASE_URL = "http://www.youtube.com";
+    private static final Logger log = Logger.getLogger(YoutubeRankerService.class.getName());
+    public static final String HTTP_PROTOCOL_PREFIX = "http";
+    public static final String PROTOCOL_SEPARATOR = "://";
+    public static final String BASE_URL = "www.youtube.com";
+    public static final String VIDEO_PREFIX = "/watch?v";
+    public static final int NUMBER_OF_TOP_ENTRIES = 10;
+    public static final int INITIAL_DEPTH_LEVEL = 1;
+    private Map<String, Document> documentsCache;
+    private List<Video> parsedVideos;
     private int relatedVideosNumber;
     private int analyzeDepthNumber;
-    private Map<String, Document> documentsCache;
+    private String rootUrl;
 
-    public YoutubeRankerService(int relatedVideosNumber, int analyzeDepthNumber) {
-        this.relatedVideosNumber = relatedVideosNumber;
-        this.analyzeDepthNumber = analyzeDepthNumber;
+    public YoutubeRankerService(Config configuration) {
+        this.relatedVideosNumber = configuration.getRelatedVideosNumber();
+        this.analyzeDepthNumber = configuration.getAnalyzeDepthNumber();
+        this.rootUrl = configuration.getRootUrl();
         documentsCache = new HashMap<>();
+        parsedVideos = new ArrayList<>();
     }
 
-    public int extractWatchCounter(String countInfo) {
+    private int extractWatchCounter(String countInfo) {
         return Integer.parseInt(countInfo.replaceAll("\\D+", ""));
     }
 
     private String getFullUrl(String url) {
-        String fullUrl = url;
-        if (!url.contains(BASE_URL))
-            fullUrl = BASE_URL + url;
-        return fullUrl;
+        if (url.startsWith(HTTP_PROTOCOL_PREFIX) && url.contains(BASE_URL) && url.contains(VIDEO_PREFIX)) {
+            return url;
+        } else if (url.startsWith(BASE_URL) && url.contains(VIDEO_PREFIX)) {
+            return HTTP_PROTOCOL_PREFIX + PROTOCOL_SEPARATOR + url;
+        } else if (url.startsWith(VIDEO_PREFIX)) {
+            return HTTP_PROTOCOL_PREFIX + PROTOCOL_SEPARATOR + BASE_URL + url;
+        } else {
+            throw new YoutubeRankerException("Incorrect youtube link.");
+        }
     }
 
-    @Override
-    public String cacheHtmlDocument(String videoUrl) {
-        //TODO get and use shortUrl
-        String fullUrl = getFullUrl(videoUrl);
-
+    private void cacheHtmlDocument(String fullUrl) {
         if (!documentsCache.containsKey(fullUrl))
             try {
                 Document htmlDocument = Jsoup.connect(fullUrl).userAgent("Mozilla").get();
@@ -49,18 +62,17 @@ public class YoutubeRankerService implements RankerService {
             } catch (IOException e) {
                 throw new YoutubeRankerException("Unable to get html document: " + fullUrl, e);
             }
-        return fullUrl;
     }
 
     private Video parseVideoInfo(String url) {
         Document videoHtmlDocument = documentsCache.get(url);
         String videoTitle = videoHtmlDocument.title();
         int watchCounter = extractWatchCounter(videoHtmlDocument.getElementsByClass("watch-view-count").text());
-        return new Video(url, videoTitle, watchCounter, 1);
+        return new Video(url, videoTitle, watchCounter, INITIAL_DEPTH_LEVEL);
     }
 
-    private void fillRelatedVideosInfo(Video video) {
-        String fullVideoUrl = getFullUrl(video.getUrl());
+    private void parseRelatedVideosInfo(Video video) {
+        String fullVideoUrl = video.getUrl();
 
         if (!documentsCache.containsKey(fullVideoUrl)) {
             cacheHtmlDocument(fullVideoUrl);
@@ -68,7 +80,7 @@ public class YoutubeRankerService implements RankerService {
         Document videoHtmlDocument = documentsCache.get(fullVideoUrl);
         Elements relatedVideos = videoHtmlDocument.select(".content-wrapper");
 
-        for (int i = 0; i < relatedVideos.size() - 1 && i < relatedVideosNumber; i++) {
+        for (int i = 0; (i < relatedVideos.size() - 1) && (i < relatedVideosNumber); i++) {
             Element relatedVideoDivision = relatedVideos.get(i);
             Elements tagA = relatedVideoDivision.select("a");
             String relatedVideoTitle = tagA.attr("title");
@@ -76,26 +88,53 @@ public class YoutubeRankerService implements RankerService {
             int relatedVideoWatchCount = extractWatchCounter(relatedVideoDivision.select(".view-count").text());
             Video relatedVideo = new Video(getFullUrl(relatedVideoUrl), relatedVideoTitle, relatedVideoWatchCount, video.getDeeplevel() + 1);
             video.addRelatedVideo(relatedVideo);
+            parsedVideos.add(relatedVideo);
+        }
+
+        documentsCache.remove(fullVideoUrl);
+    }
+
+    private Video analyzeRootVideo() {
+        log.log(Level.INFO, "Start analyze.");
+        String fullUrl = getFullUrl(rootUrl);
+        cacheHtmlDocument(fullUrl);
+        Video rootVideo = parseVideoInfo(fullUrl);
+        parsedVideos.add(rootVideo);
+        parseRelatedVideosInfo(rootVideo);
+
+        return rootVideo;
+    }
+
+    private void analyzeRelatedVideos(Video rootVideo) {
+        for (Video video : rootVideo.getRelatedVideos()) {
+            if (video.getDeeplevel() > analyzeDepthNumber)
+                continue;
+            parseRelatedVideosInfo(video);
+            analyzeRelatedVideos(video);
         }
     }
 
     @Override
-    public Video extractFullVideoInfo(String videoUrl) {
-        String cacheKey = cacheHtmlDocument(videoUrl);
-        Video parsedVideo = parseVideoInfo(cacheKey);
-        fillRelatedVideosInfo(parsedVideo);
-
-        return parsedVideo;
+    public void rankVideos() {
+        Video video = analyzeRootVideo();
+        analyzeRelatedVideos(video);
     }
 
     @Override
-    public void analyzeRelatedVideos(Video rootVideo) {
-        while (analyzeDepthNumber >= 1) {
-            analyzeDepthNumber--;
-            for (Video video : rootVideo.getRelatedVideos()) {
-                fillRelatedVideosInfo(video);
-                analyzeRelatedVideos(video);
+    public List<Video> getTop() {
+        log.log(Level.INFO, "Sorting results.");
+        Set<Video> sortedVideos = new TreeSet<>(parsedVideos);
+        List<Video> topVideos = new ArrayList<>();
+        int addedVideosCount = 0;
+
+        for (Video sortedVideo : sortedVideos) {
+            if (addedVideosCount <= NUMBER_OF_TOP_ENTRIES) {
+                topVideos.add(sortedVideo);
+                addedVideosCount++;
+            } else {
+                break;
             }
         }
+        return topVideos;
     }
 }

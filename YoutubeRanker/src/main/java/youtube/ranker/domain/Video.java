@@ -3,7 +3,7 @@ package youtube.ranker.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Video {
+public class Video implements Comparable {
     private String url;
     private String name;
     private long watchCounter;
@@ -43,6 +43,12 @@ public class Video {
     }
 
     @Override
+    public int compareTo(Object o) {
+        Video other = (Video) o;
+        return Long.compare(other.getWatchCounter(), this.getWatchCounter());
+    }
+
+    @Override
     public String toString() {
         StringBuilder separator = new StringBuilder();
         int j = deeplevel;
@@ -60,6 +66,8 @@ public class Video {
         string.append(separator);
         string.append(" related: ");
         string.append(relatedVideos.size());
+        string.append(" level ");
+        string.append(deeplevel);
         string.append(" \n");
 
         for (Video relatedVideo : relatedVideos) {
