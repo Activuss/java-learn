@@ -1,8 +1,8 @@
-import yotube.ranker.service.RankerService;
-import yotube.ranker.service.YoutubeRankerService;
+import youtube.ranker.service.RankerService;
+import youtube.ranker.service.YoutubeRankerService;
 import youtube.ranker.domain.Config;
-import youtube.tanker.ui.CliUserInterface;
-import youtube.tanker.ui.UserInterface;
+import youtube.ranker.ui.CliUserInterface;
+import youtube.ranker.ui.UserInterface;
 
 public class Main {
 

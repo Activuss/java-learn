@@ -1,4 +1,4 @@
-package youtube.tanker.ui;
+package youtube.ranker.ui;
 
 import youtube.ranker.domain.Config;
 import youtube.ranker.domain.Video;

@@ -1,4 +1,4 @@
-package yotube.ranker.service;
+package youtube.ranker.service;
 
 import youtube.ranker.domain.Video;
 

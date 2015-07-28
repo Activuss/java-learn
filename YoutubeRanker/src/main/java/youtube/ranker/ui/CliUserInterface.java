@@ -1,4 +1,4 @@
-package youtube.tanker.ui;
+package youtube.ranker.ui;
 
 import org.apache.commons.cli.*;
 import youtube.ranker.domain.Config;

@@ -1,4 +1,4 @@
-package yotube.ranker.service;
+package youtube.ranker.service;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
