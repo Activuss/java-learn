@@ -24,11 +24,15 @@ public class HTMLParserExample1 {
             System.out.println("Watches: " + doc.getElementsByClass("watch-view-count").text());
 
             // get all links
-            Elements links = doc.select(".content-wrapper .yt-uix-sessionlink");
+            Elements links = doc.select(".content-wrapper");
+//            Elements links = doc.select(".content-wrapper .yt-uix-sessionlink");
             for (Element link : links) {
-
-                System.out.println("\nlink : " + link.attr("href"));
-                System.out.println("text : " + link.text());
+                    Elements tagsA = link.select("a");
+                System.out.println("\nlink : " + tagsA.attr("href"));
+//                System.out.println("\nlink : " + link.attr("href"));
+                System.out.println("text : " + tagsA.attr("title"));
+                System.out.println("text : " + link.select(".view-count").text());
+//                System.out.println("text : " + link.text());
 
             }
 
