@@ -92,11 +92,9 @@ public class YoutubeRankerService implements RankerService {
     public void analyzeRelatedVideos(Video rootVideo) {
         while (analyzeDepthNumber >= 1) {
             analyzeDepthNumber--;
-            for (Video video : rootVideo.getRelatedVideos()) {//
+            for (Video video : rootVideo.getRelatedVideos()) {
                 fillRelatedVideosInfo(video);
-                for (Video relatedVideo : video.getRelatedVideos()) {
-                    analyzeRelatedVideos(relatedVideo);
-                }
+                analyzeRelatedVideos(video);
             }
         }
     }
