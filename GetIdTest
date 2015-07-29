@@ -1,0 +1,39 @@
+import junit.framework.Assert;
+import org.junit.Test;
+
+public class IdRecieverTest {
+    class Object1 {
+        private int id;
+
+        Object1(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+    }
+
+    class Object2 {
+        private String name;
+
+        Object2(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    @Test
+    public void idRecievetest() {
+        Object1 object1 = new Object1(2);
+        Object2 object2 = new Object2("name");
+        Assert.assertEquals(2, IdReciever.getId(object1));
+        Assert.assertEquals("name", IdReciever.getId(object2));
+        Assert.assertEquals(4L, IdReciever.getId(4L));
+        Assert.assertEquals("fileName", IdReciever.getId("fileName"));
+    }
+
+}
