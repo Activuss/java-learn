@@ -85,10 +85,13 @@ public class YoutubeRankerService implements RankerService {
             Elements tagA = relatedVideoDivision.select("a");
             String relatedVideoTitle = tagA.attr("title");
             String relatedVideoUrl = tagA.attr("href");
-            int relatedVideoWatchCount = extractWatchCounter(relatedVideoDivision.select(".view-count").text());
-            Video relatedVideo = new Video(getFullUrl(relatedVideoUrl), relatedVideoTitle, relatedVideoWatchCount, video.getDeeplevel() + 1);
-            video.addRelatedVideo(relatedVideo);
-            parsedVideos.add(relatedVideo);
+            String viewCountString = relatedVideoDivision.select(".view-count").text();
+            if (!viewCountString.isEmpty()) {
+                int relatedVideoWatchCount = extractWatchCounter(viewCountString);
+                Video relatedVideo = new Video(getFullUrl(relatedVideoUrl), relatedVideoTitle, relatedVideoWatchCount, video.getDeeplevel() + 1);
+                video.addRelatedVideo(relatedVideo);
+                parsedVideos.add(relatedVideo);
+            }
         }
 
         documentsCache.remove(fullVideoUrl);
