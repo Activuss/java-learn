@@ -1,3 +1,4 @@
+import youtube.ranker.domain.RankCriteria;
 import youtube.ranker.service.HtmlParserService;
 import youtube.ranker.service.ParserService;
 import youtube.ranker.service.RankerService;
@@ -19,6 +20,6 @@ public class Main {
 
         rankerService.buildVideoHierarchy();
 
-        userInterface.printResult(rankerService.getTop());
+        userInterface.printResult(rankerService.getTop(RankCriteria.VIEW_COUNT));
     }
 }

@@ -1,7 +1,9 @@
 package youtube.ranker.service;
 
 import youtube.ranker.domain.Config;
+import youtube.ranker.domain.RankCriteria;
 import youtube.ranker.domain.Video;
+import youtube.ranker.domain.ViewCountComparator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,9 +56,18 @@ public class YoutubeRankerService implements RankerService {
     }
 
     @Override
-    public List<Video> getTop() {
+    public List<Video> getTop(RankCriteria criteria) {
         log.log(Level.INFO, "Sorting results.");
-        Set<Video> sortedVideos = new TreeSet<>(parsedVideos);
+        Set<Video> sortedVideos;
+
+        switch (criteria) {
+            case VIEW_COUNT:
+            default:
+                sortedVideos = new TreeSet<>(new ViewCountComparator());
+                break;
+        }
+        sortedVideos.addAll(parsedVideos);
+
         List<Video> topVideos = new ArrayList<>();
         int addedVideosCount = 0;
 

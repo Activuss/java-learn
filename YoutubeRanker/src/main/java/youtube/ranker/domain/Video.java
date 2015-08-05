@@ -3,7 +3,7 @@ package youtube.ranker.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Video implements Comparable {
+public class Video {
     private final String url;
     private final String name;
     private final long viewCounter;
@@ -40,12 +40,6 @@ public class Video implements Comparable {
 
     public int getDeeplevel() {
         return deeplevel;
-    }
-
-    @Override
-    public int compareTo(Object o) {
-        Video other = (Video) o;
-        return Long.compare(other.getViewCounter(), this.getViewCounter());
     }
 
     @Override

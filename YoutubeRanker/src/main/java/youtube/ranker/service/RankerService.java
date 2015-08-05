@@ -1,5 +1,6 @@
 package youtube.ranker.service;
 
+import youtube.ranker.domain.RankCriteria;
 import youtube.ranker.domain.Video;
 
 import java.util.List;
@@ -11,5 +12,5 @@ public interface RankerService {
 
     void buildVideoHierarchy();
 
-    List<Video> getTop();
+    List<Video> getTop(RankCriteria criteria);
 }
