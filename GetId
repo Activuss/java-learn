@@ -1,0 +1,37 @@
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+public class IdReciever {
+
+    public static Object getId(Object obj) {
+        Object result = null;
+
+        if ((obj.getClass() == Long.class) || obj.getClass() == String.class) {
+            result = obj;
+        } else {
+            Method[] objectMethods = obj.getClass().getMethods();
+            Method idMethod = null;
+
+            for (Method method : objectMethods) {
+                String methodName = method.getName();
+                if (methodName.contains("getId") || methodName.contains("getName") || methodName.contains("getFilename")) {
+                    idMethod = method;
+                    break;
+                }
+            }
+
+            if (idMethod != null) {
+                try {
+                    result = idMethod.invoke(obj);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                throw new RuntimeException("Unable to get id from class");
+            }
+        }
+        return result;
+    }
+}
