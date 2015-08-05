@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Video implements Comparable {
-    private String url;
-    private String name;
-    private long watchCounter;
-    private List<Video> relatedVideos;
-    private int deeplevel;
+    private final String url;
+    private final String name;
+    private final long viewCounter;
+    private final List<Video> relatedVideos;
+    private final int deeplevel;
 
-    public Video(String url, String name, long watchCounter, int deeplevel) {
+    public Video(String url, String name, long viewCounter, int deeplevel) {
         this.url = url;
         this.name = name;
-        this.watchCounter = watchCounter;
+        this.viewCounter = viewCounter;
         this.deeplevel = deeplevel;
         relatedVideos = new ArrayList<>();
     }
@@ -30,8 +30,8 @@ public class Video implements Comparable {
         return name;
     }
 
-    public long getWatchCounter() {
-        return watchCounter;
+    public long getViewCounter() {
+        return viewCounter;
     }
 
     public List<Video> getRelatedVideos() {
@@ -45,7 +45,7 @@ public class Video implements Comparable {
     @Override
     public int compareTo(Object o) {
         Video other = (Video) o;
-        return Long.compare(other.getWatchCounter(), this.getWatchCounter());
+        return Long.compare(other.getViewCounter(), this.getViewCounter());
     }
 
     @Override
@@ -60,8 +60,8 @@ public class Video implements Comparable {
         StringBuilder string = new StringBuilder();
         string.append("Video{url='");
         string.append(url);
-        string.append('\'' + '\'' + ", watchCounter=");
-        string.append(watchCounter);
+        string.append('\'' + '\'' + ", viewCounter=");
+        string.append(viewCounter);
         string.append("}");
         string.append(separator);
         string.append(" related: ");

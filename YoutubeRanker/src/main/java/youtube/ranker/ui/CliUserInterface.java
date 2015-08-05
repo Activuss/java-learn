@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CliUserInterface implements UserInterface {
+public final class CliUserInterface implements UserInterface {
     private static final Logger log = Logger.getLogger(CliUserInterface.class.getName());
     private String[] args = null;
     private Options options = new Options();
@@ -75,7 +75,7 @@ public class CliUserInterface implements UserInterface {
     public void printResult(List<Video> topVideos) {
         System.out.println("Top videos:");
         for (Video video : topVideos) {
-            System.out.format("View-count: %d, Url: %s, Name: %s", video.getWatchCounter(), video.getUrl(), video.getName());
+            System.out.format("View-count: %d, Url: %s, Name: %s", video.getViewCounter(), video.getUrl(), video.getName());
             System.out.println();
         }
     }

@@ -1,3 +1,5 @@
+import youtube.ranker.service.HtmlParserService;
+import youtube.ranker.service.ParserService;
 import youtube.ranker.service.RankerService;
 import youtube.ranker.service.YoutubeRankerService;
 import youtube.ranker.domain.Config;
@@ -11,9 +13,11 @@ public class Main {
 
         Config config = userInterface.getConfig();
 
-        RankerService rankerService = new YoutubeRankerService(config);
+        ParserService parserService = new HtmlParserService(config);
 
-        rankerService.rankVideos();
+        RankerService rankerService = new YoutubeRankerService(config, parserService);
+
+        rankerService.buildVideoHierarchy();
 
         userInterface.printResult(rankerService.getTop());
     }

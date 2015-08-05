@@ -5,7 +5,11 @@ import youtube.ranker.domain.Video;
 import java.util.List;
 
 public interface RankerService {
-    void rankVideos();
+    Video analyzeRootVideo();
+
+    void analyzeRelatedVideos(Video baseVideo);
+
+    void buildVideoHierarchy();
 
     List<Video> getTop();
 }
